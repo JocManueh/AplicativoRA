@@ -49,7 +49,7 @@ MonoBehaviour:
   logEmpty: {fileID: 6105184751246842968, guid: 7707ec73a84d5b143ad22fb27355a9ae, type: 3}
   logLeft: {fileID: 6384311436025214114, guid: 492a98b280a8aea43a902625ff24823b, type: 3}
   logRight: {fileID: 4220548590791110995, guid: 8e2c96233eb726b40b74700e5b201bad, type: 3}
-  logHeight: 0.15
+  logHeight: 1
 --- !u!1001 &3869136486841333683
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -200,7 +200,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: ddda9caf52cfd6849a134448754168b3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5
+      value: -1.47
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ddda9caf52cfd6849a134448754168b3, type: 3}
       propertyPath: m_LocalPosition.y
