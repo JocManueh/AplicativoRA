@@ -12,13 +12,13 @@ public class PlayerController : MonoBehaviour
 
     private bool isDead = false;
 
-    // Posiciones LOCALES al lado del arbol (ajusta el numero si se acerca o aleja mucho)
-    private Vector3 leftPos = new Vector3(-1.47f, 0, 0);
-    private Vector3 rightPos = new Vector3(1.47f, 0, 0);
+    // Posiciones LOCALES al lado del árbol (X: -1.47 y 1.47)
+    private Vector3 leftPos = new Vector3(-1.47f, 0f, 0f);
+    private Vector3 rightPos = new Vector3(1.47f, 0f, 0f);
 
-    // Rotaciones LOCALES para mirar hacia el tronco
-    private Quaternion lookRight = Quaternion.Euler(0, 90, 0);
-    private Quaternion lookLeft = Quaternion.Euler(0, -90, 0);
+    // Rotaciones LOCALES correctas para tu modelo (X:0, Z:0)
+    private Quaternion lookRight = Quaternion.Euler(0f, 90f, 0f);  // Mira al árbol desde la izquierda
+    private Quaternion lookLeft = Quaternion.Euler(0f, -90f, 0f); // Mira al árbol desde la derecha
 
     void OnEnable()
     {
@@ -39,22 +39,19 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            bool touchedLeft = Input.mousePosition.x < Screen.width / 2;
+            // Divide la pantalla a la mitad para detectar toque izquierdo o derecho
+            bool touchedLeft = Input.mousePosition.x < (Screen.width / 2f);
             HandleChop(touchedLeft);
         }
     }
 
     private void HandleChop(bool touchedLeft)
     {
-        // 1) Primero movemos al leñador al lado donde tocaron: esto es lo que hace que
-        //    "si le doy a la derecha, el leñador pase a la derecha a talar".
+        // 1) Movemos al leñador a su posición y rotación correspondiente
         transform.localPosition = touchedLeft ? leftPos : rightPos;
         transform.localRotation = touchedLeft ? lookRight : lookLeft;
 
-        // 2) Revisamos el tronco de ABAJO tal como esta, ANTES de talarlo. Ese es el
-        //    tronco que le pega al leñador si tiene una rama de su mismo lado.
-        //    (El bug original talaba primero y revisaba el tronco siguiente, por eso
-        //    la muerte pasaba "un tronco tarde".)
+        // 2) Revisamos el tronco de ABAJO ANTES de talarlo
         string currentBottomTag = treeManager.GetBottomLogTag();
 
         bool hitByBranch =
@@ -67,7 +64,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // 3) Si esquivo la rama a tiempo, recien ahi se tala el tronco.
+        // 3) Si esquivó la rama, se realiza la animación, sonido y corte
         if (anim != null) anim.SetTrigger("Chop");
         PlayChopSound(touchedLeft);
         treeManager.ChopBottomLog();
