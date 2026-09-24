@@ -9,7 +9,18 @@ public class TreeManager : MonoBehaviour
 
     void Start()
     {
-        // Crear los 5 troncos iniciales
+        ResetTree();
+    }
+
+    // Reinicia el arbol completo (usado al reiniciar la partida)
+    public void ResetTree()
+    {
+        foreach (var log in logsOnScreen)
+        {
+            if (log != null) Destroy(log);
+        }
+        logsOnScreen.Clear();
+
         for (int i = 0; i < 5; i++)
         {
             SpawnLog(i, i == 0);
@@ -26,31 +37,34 @@ public class TreeManager : MonoBehaviour
             else if (random == 2) logToSpawn = logRight;
         }
 
-        // Instanciar como hijo directo de GameRoot
         GameObject newLog = Instantiate(logToSpawn, transform);
 
-        // POSICIÓN Y ROTACIÓN LOCAL (Mantiene la escala e inclinación exacta de GameRoot en AR)
         newLog.transform.localPosition = new Vector3(0, positionIndex * logHeight, 0);
         newLog.transform.localRotation = Quaternion.identity;
 
         logsOnScreen.Add(newLog);
     }
 
-    public string ChopBottomLog()
+    // NUEVO: consulta el tag del tronco de abajo SIN talarlo.
+    // Se usa para decidir si el leñador esquivo la rama antes de talar.
+    public string GetBottomLogTag()
     {
         if (logsOnScreen.Count == 0) return "Empty";
+        return logsOnScreen[0].tag;
+    }
+
+    public void ChopBottomLog()
+    {
+        if (logsOnScreen.Count == 0) return;
 
         Destroy(logsOnScreen[0]);
         logsOnScreen.RemoveAt(0);
 
-        // Bajar todos los troncos en su eje Y local
         foreach (var log in logsOnScreen)
         {
             log.transform.localPosition -= new Vector3(0, logHeight, 0);
         }
 
         SpawnLog(logsOnScreen.Count, false);
-
-        return logsOnScreen[0].tag;
     }
 }
