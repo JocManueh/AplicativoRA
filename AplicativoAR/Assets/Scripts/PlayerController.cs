@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Necesario para reiniciar la escena
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,27 +6,38 @@ public class PlayerController : MonoBehaviour
     public Animator anim;
 
     private bool isDead = false;
-    private Vector3 leftPos = new Vector3(-0.5f, 0, 0); // Ajusta la posición izquierda
-    private Vector3 rightPos = new Vector3(0.5f, 0, 0); // Ajusta la posición derecha
+
+    // Posiciones pegadas al tronco (Reducidas para que no se aleje tanto)
+    private Vector3 leftPos = new Vector3(-0.25f, 0, 0);
+    private Vector3 rightPos = new Vector3(0.25f, 0, 0);
 
     void Update()
     {
         if (isDead) return;
 
-        // Detectar toque en la pantalla del celular
+        // Detectar toque en la pantalla
         if (Input.GetMouseButtonDown(0))
         {
             bool touchedLeft = Input.mousePosition.x < Screen.width / 2;
 
-            // Mover leñador y voltearlo
-            transform.localPosition = touchedLeft ? leftPos : rightPos;
-            transform.localScale = new Vector3(touchedLeft ? 1 : -1, 1, 1);
+            if (touchedLeft)
+            {
+                transform.localPosition = leftPos;
+                // Rotación limpia mirando hacia la derecha (hacia el árbol)
+                transform.localRotation = Quaternion.Euler(0, 90, 0);
+            }
+            else
+            {
+                transform.localPosition = rightPos;
+                // Rotación limpia mirando hacia la izquierda (hacia el árbol)
+                transform.localRotation = Quaternion.Euler(0, -90, 0);
+            }
 
-            if (anim != null) anim.SetTrigger("Chop"); // Animación de talar
+            if (anim != null) anim.SetTrigger("Chop");
 
-            string bottomLogTag = treeManager.ChopBottomLog(); // Cortar el árbol
+            string bottomLogTag = treeManager.ChopBottomLog();
 
-            // Si el tronco de abajo tiene una rama de nuestro lado, perdemos
+            // Si hay rama en nuestro lado, morimos
             if ((touchedLeft && bottomLogTag == "LeftBranch") || (!touchedLeft && bottomLogTag == "RightBranch"))
             {
                 Die();
@@ -38,13 +48,12 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         isDead = true;
-        if (anim != null) anim.SetTrigger("Die"); // Animación de morir
+        if (anim != null) anim.SetTrigger("Die");
 
-        // BUSCAR EL BOTÓN EN LA ESCENA Y MOSTRARLO
-        GameObject btn = GameObject.Find("RestartButton"); // Busca el botón por su nombre
+        GameObject btn = GameObject.Find("RestartButton");
         if (btn != null)
         {
-            btn.SetActive(true); // Lo hace visible
+            btn.SetActive(true);
         }
     }
 }
